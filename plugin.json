@@ -4,7 +4,7 @@
   "version": "0.1.2",
   "description": "Предотвращение оверинжиниринга при обсуждении плана и ревью изменений.",
   "author": { "name": "Mikhail Rubin", "url": "https://github.com/rubinho-m" },
-  "repository": "https://github.com/rubinho-m/lean-agent-skills",
+  "repository": "https://github.com/rubinho-m/underengineering",
   "license": "MIT",
   "extensions": {
     "com.openai": {

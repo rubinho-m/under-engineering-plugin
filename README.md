@@ -87,12 +87,6 @@ Start a new session or run `/reload-plugins`. Both skills and the shared
 The Codex/Claude plugin requires no additional Python, Node.js, MCP servers,
 API keys, or services. Its hook runs only the shell's built-in `echo` command.
 
-## Compatibility checks
-
-OpenCode 1.19.5 discovered both skills installed by `skills` CLI 1.7.4 in an
-isolated project. Claude Code 2.1.312 passed strict plugin validation. These
-checks cover installation and discovery, not model behavior in a conversation.
-
 ## What the skills do
 
 `lean-grilling` works on its own and alongside an existing `grilling` skill. It
@@ -147,35 +141,3 @@ claude plugin uninstall lean-agent-skills@rubinho-m
 Uninstalling the plugin leaves other plugins in the `rubinho-m` marketplace
 intact. The package does not overwrite manually installed personal skills or
 hooks. If you already have those copies, check for duplicates before use.
-
-## Credits
-
-The planning discussion is based on
-[`grilling`](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md)
-by [Matt Pocock](https://github.com/mattpocock), licensed under MIT. Attribution
-also appears in the `lean-grilling` skill's `metadata.credits` field.
-Complexity filtering, decision cost tracking, and change review are additions
-in this package. Package license: [MIT](LICENSE).
-
-## Development
-
-Python 3 is required to run the package checks:
-
-```sh
-python3 -m unittest discover -s tests -v
-```
-
-Before a release, update `version` in both `plugin.json` and
-`.claude-plugin/plugin.json`, then run the checks. Both manifests share `skills/`
-and `hooks/hooks.json`; do not declare the hook again in either manifest.
-Validate the Claude Code package with `claude plugin validate . --strict`.
-
-Installation and format references:
-[Codex plugins](https://developers.openai.com/plugins/build/plugins),
-[Codex CLI](https://learn.chatgpt.com/docs/cli/reference),
-[Codex hook trust](https://learn.chatgpt.com/docs/hooks),
-[Claude Code plugins](https://code.claude.com/docs/en/plugins-reference),
-[Claude Code plugin commands](https://code.claude.com/docs/en/plugins/cli-reference).
-
-This repository is a Git marketplace for plugin installation. It is not a
-submission to OpenAI's official plugin directory.

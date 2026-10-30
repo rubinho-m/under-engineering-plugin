@@ -1,12 +1,11 @@
 # Under Engineering Plugin
 
-Two skills and bundled hook that prevent unnecessary complexity while planning and find it in
-completed code. They focus on redundant service and database calls, work added
-without agreement, and safeguards for hypothetical problems.
+Two skills and bundled hook that prevent unnecessary complexity while planning and find it in completed code.
+They focus on redundant service and database calls, work added without agreement, and safeguards for hypothetical problems.
 
 ## What the plugin does
 
-`lean-grilling` builds on [grilling](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md)
+Skill `lean-grilling` builds on [grilling](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md)
 by [Matt Pocock](https://github.com/mattpocock), adding checks for unnecessary complexity during planning.
 
 `lean-grilling` works on its own and alongside an existing `grilling` skill. It

@@ -1,6 +1,6 @@
 {
-  "name": "lean-agent-skills",
-  "version": "0.1.2",
+  "name": "underengineering-agent-skills",
+  "version": "0.1.3",
   "description": "Предотвращение оверинжиниринга при обсуждении плана и ревью изменений.",
   "author": { "name": "Mikhail Rubin", "url": "https://github.com/rubinho-m" },
   "repository": "https://github.com/rubinho-m/underengineering",

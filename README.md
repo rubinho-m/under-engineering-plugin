@@ -1,4 +1,4 @@
-# Lean Agent Skills
+# Under (anti-over) engineering Agent Skills
 
 Два скилла для Codex и Claude Code: предотвращают лишнюю сложность при обсуждении плана
 и находят её в готовом коде. Особенно проверяют обращения к сервисам и БД,

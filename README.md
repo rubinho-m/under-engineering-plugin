@@ -89,6 +89,10 @@ API keys, or services. Its hook runs only the shell's built-in `echo` command.
 
 ## What the skills do
 
+`lean-grilling` builds on [grilling](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md)
+by [Matt Pocock](https://github.com/mattpocock), licensed under MIT, adding checks
+for unnecessary complexity during planning.
+
 `lean-grilling` works on its own and alongside an existing `grilling` skill. It
 filters questions before each round, checks the simplest sufficient solution,
 shows the material cost of decisions, and requests one independent review before

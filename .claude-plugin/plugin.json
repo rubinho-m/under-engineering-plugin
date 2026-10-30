@@ -1,7 +1,7 @@
 {
   "name": "under-engineering-plugin",
-  "version": "0.1.4",
-  "description": "Предотвращение оверинжиниринга при обсуждении плана и ревью изменений.",
+  "version": "0.1.5",
+  "description": "Prevent overengineering during planning and change review.",
   "author": { "name": "Mikhail Rubin", "url": "https://github.com/rubinho-m" },
   "repository": "https://github.com/rubinho-m/under-engineering-plugin",
   "license": "MIT"

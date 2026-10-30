@@ -1,4 +1,4 @@
 interface:
-  display_name: "Гриллинг без лишней сложности"
-  short_description: "Проверяет вопросы, рекомендации и план на избыточность"
-  default_prompt: "Используй $lean-grilling вместе с grilling: проверь необходимость вопросов, простые варианты, цену решений и итоговый план."
+  display_name: "Grilling without unnecessary complexity"
+  short_description: "Checks questions, recommendations, and plans for excess complexity"
+  default_prompt: "Use $lean-grilling alongside grilling: check whether questions are necessary, compare simpler options, track decision costs, and review the final plan."

@@ -1,147 +1,151 @@
 ---
 name: overengineering-review
 description: >-
-  Разбирает один или несколько MR/PR на оверинжиниринг: лишние обращения к сервисам
-  и БД, самовольно расширенный объём, ненужные механизмы и чрезмерную осторожность.
-  Использовать для проверки избыточности реализации и соответствия согласованному
-  плану. Результат — обоснованные упрощения; обычное ревью ошибок и стиля не заменяет.
+  Reviews one or more MRs/PRs for overengineering: unnecessary service and database
+  calls, unapproved scope, redundant mechanisms, and excessive caution. Use to
+  check implementation complexity and alignment with the agreed plan. Produces
+  evidence-based simplifications; does not replace correctness or style review.
 ---
 
-# Ревью лишней сложности
+# Review unnecessary complexity
 
-Найди работу, которую система и сопровождающий выполняют без необходимости.
-Предлагай наименьшее решение, полностью выполняющее согласованные требования.
-Размер diff и число классов сами по себе избыточность не доказывают.
+Find work the system and its maintainers perform without a need.
+Propose the smallest solution that fully meets the agreed requirements.
+Diff size and class counts alone do not prove overengineering.
 
-По умолчанию выполняй только анализ: читай код и доступные источники, проводи
-безопасные локальные проверки. Изменения кода, публикация замечаний, создание задач,
-запросы прав и развёртывание требуют отдельного поручения. Нулевой список замечаний
-допустим; поиск обязан закончиться отчётом, а не новым проектом по улучшению проекта.
+Analyze only by default: read code and available sources and run safe local
+checks. Code changes, publishing findings, creating tasks, requesting permissions,
+and deployment require a separate instruction. Returning no findings is
+acceptable; the search must end with a report, not a new project to improve the
+project.
 
-## Зафиксируй изменение и договорённости
+## Establish the change and agreements
 
-Для каждого MR установи репозиторий, целевую ветку, SHA исходной версии и базу
-сравнения. Смотри весь diff от базы слияния, а не последний коммит. При нескольких
-MR проследи их общий сценарий и границы между компонентами; одинаковые поля
-на разных сторонах сетевого контракта не означают дублирующую бизнес-логику.
-Текущую рабочую ветку сохраняй. Если вместо MR даны локальные изменения, назови
-границы сравнения. Отсутствующий адрес MR или недоступный репозиторий уточни,
-проверку доступных частей продолжай.
+For each MR, establish the repository, target branch, source revision SHA, and
+comparison base. Examine the full diff from the merge base, not just the latest
+commit. For multiple MRs, trace their shared scenario and component boundaries;
+matching fields on different sides of a network contract do not imply duplicated
+business logic. Preserve the current working branch. If given local changes
+instead of an MR, state the comparison boundaries. Ask for a missing MR URL or
+inaccessible repository while continuing to review the available parts.
 
-Восстанови ожидаемое поведение по согласованным плану, ТЗ и решениям пользователя.
-Более позднее явное решение пользователя имеет приоритет над старой постановкой.
-Отделяй требование от выбранного агентом способа реализации. Новые документы,
-тесты, описание MR и комментарии агента показывают его намерение, но сами по себе
-не доказывают согласование. Принятый пользователем документ — источник требований.
+Reconstruct expected behavior from the agreed plan, specification, and user
+decisions. A later explicit user decision takes precedence over an older brief.
+Distinguish a requirement from the agent's implementation choice. New documents,
+tests, MR descriptions, and agent comments show intent but do not themselves
+prove approval. A document accepted by the user is a source of requirements.
 
-Установи границу этапа: что делается сейчас, что явно отложено; какие старые
-клиенты, данные и развёрнутые версии действительно нужно поддерживать. Состояние
-развёртывания бери из доступных фактов, включая слова пользователя. Отсутствие
-сведений о выпуске не доказывает ни наличие, ни отсутствие старых потребителей.
+Establish the stage's scope: what is being done now and what is explicitly
+deferred; which old clients, data, and deployed versions actually need support.
+Use available facts, including user statements, for deployment status. Missing
+release information proves neither the presence nor the absence of old consumers.
 
-Если согласованный источник недоступен, продолжай проверку лишних операций,
-но вывод «агент придумал сам» оставь неподтверждённым. Отсутствие строчки в ТЗ
-не отменяет необходимые технические следствия требования.
+If the agreed source is unavailable, continue checking for redundant operations,
+but leave “the agent invented this” unconfirmed. An omission from the specification
+does not cancel necessary technical consequences of a requirement.
 
-## Проследи стоимость сценария
+## Trace the cost of the scenario
 
-От пользовательского действия пройди вызывающий код, реализации клиентов,
-серверные обработчики и запросы БД. В нескольких MR проверяй обе стороны операции.
-Найди существующие средства проекта и реальные возможности вызываемого API.
-Счётчик вызовов сам по себе не заменяет проверку назначения каждого вызова.
+Starting from the user action, follow calling code, client implementations,
+server handlers, and database queries. Across multiple MRs, check both sides of
+the operation. Find existing project facilities and the actual capabilities of
+the called API. Counting calls does not replace checking each call's purpose.
 
-Для затронутых сценариев установи:
+For affected scenarios, establish:
 
-- Сколько обращений к каждому сервису и БД делает одно действие; где они идут
-  последовательно, в цикле, при повторе или с каждой реплики.
-- Как стоимость меняется с размером страницы, числом элементов, открытых вкладок
-  и периодом опроса. Достаточно формулы `N запросов на обновление`; произвольную
-  «большую нагрузку» не выдумывай. Замер отделяй от расчётного примера.
-- Какой результат использует следующий шаг. Есть ли запрос ради неиспользуемого
-  поля, повторное чтение уже полученного контекста, лишняя перезагрузка всего списка,
-  запись неизменившегося снимка или обращение при выключенной функции.
-- Есть ли у поставщика уже доступная пакетная операция, нужные данные в текущем
-  ответе или существующий клиент. Сокращая обращения, сохраняй проверки прав,
-  актуальность данных, порядок эффектов, ограничения размера ответа и повторы.
+- How many calls one action makes to each service and database; where they run
+  sequentially, in a loop, on retry, or from each replica.
+- How cost changes with page size, item count, open tabs, and polling interval.
+  A formula such as `N calls per refresh` is sufficient; do not invent arbitrary
+  “high load.” Distinguish measurements from calculated examples.
+- Which result the next step uses. Look for calls for unused fields, rereading
+  context already obtained, unnecessarily reloading an entire list, writing an
+  unchanged snapshot, or making a call while a feature is disabled.
+- Whether the provider already offers a batch operation, the data is in the
+  current response, or an existing client can be reused. When reducing calls,
+  preserve authorization, data freshness, effect ordering, response size limits,
+  and retry behavior.
 
-Для каждого подозрительного обращения назови потребителя результата и гарантию,
-которую потеряем при удалении. Если гарантия нужна, ищи более дешёвый путь её
-сохранить. Проверка прав при записи и недоверие клиентскому вводу нужны даже при
-похожей проверке в интерфейсе. Предложение кэшировать права или пропустить
-валидацию без доказательства допустимой актуальности не является упрощением.
+For each suspicious call, identify the consumer of its result and the guarantee
+lost by removing it. If that guarantee is necessary, find a cheaper way to preserve
+it. Authorization on writes and distrust of client input remain necessary even
+with a similar UI check. Caching permissions or skipping validation without
+proving acceptable freshness is not a simplification.
 
-## Проверь, кто добавил работу и зачем
+## Check who added the work and why
 
-Сопоставь добавленные механизмы с согласованным поведением и его техническими
-следствиями. Прицельно проверь:
+Compare added mechanisms with agreed behavior and its technical consequences.
+Specifically check:
 
-- Интеграции, идентификаторы, права доступа и настройки «на будущее», которые
-  не нужны ни одному действующему потребителю текущего этапа.
-- Абстракции, универсальные обработчики, новые зависимости и копии существующих
-  механизмов, для которых прямое решение короче и сохраняет те же свойства.
-- Дополнительные состояния, очереди, фоновые задания, согласования и ручные шаги,
-  введённые реализацией вместо запрошенного сценария.
-- Дублирование владельцев состояния: несколько компонентов заново получают,
-  сохраняют и согласуют одни данные без отдельной ответственности каждого.
+- Integrations, identifiers, permissions, and configuration added “for the future”
+  that no active consumer in the current stage needs.
+- Abstractions, general-purpose handlers, new dependencies, and copies of existing
+  mechanisms where a direct solution is shorter and preserves the same properties.
+- Extra states, queues, background jobs, approvals, and manual steps introduced
+  by the implementation instead of the requested scenario.
+- Duplicated ownership of state: multiple components fetching, storing, and
+  reconciling the same data without distinct responsibilities.
 
-Один интерфейс с одной реализацией, отдельная очередь или несколько представлений
-одного объекта ещё не замечание. Докажи конкретную лишнюю работу и меньший вариант.
-Общий фреймворк ради двух похожих функций может увеличить сложность.
+An interface with one implementation, a separate queue, or multiple representations
+of one object is not a finding by itself. Prove specific unnecessary work and a
+smaller alternative. A shared framework for two similar functions can increase
+complexity.
 
-## Проверь соразмерность осторожности
+## Check whether caution is proportionate
 
-Разбери, какой реальный отказ обслуживает защитный механизм и требуется ли он
-в этом этапе. Кандидаты на упрощение:
+Determine which real failure a safeguard addresses and whether it is required at
+this stage. Candidates for simplification include:
 
-- Совместимость с версиями и миграция данных, которых по подтверждённым фактам
-  никогда не существовало; поддержка гипотетических внешних потребителей.
-- Повторы, резервные пути и самовосстановление, скрывающие явный отказ или создающие
-  дополнительные эффекты; обязательный поход в поддержку вместо штатной ошибки.
-- Флаги, ручные разрешения, предварительные проверки и новые зависимости,
-  блокирующие обычное действие без требования или проверенной причины.
-- Избыточные планы выпуска, инфраструктура проверок и отдельные задачи для
-  гипотетического риска, который не следует из текущего кода и окружения.
+- Compatibility with versions and migration of data that, according to confirmed
+  facts, never existed; support for hypothetical external consumers.
+- Retries, fallbacks, and self-healing that hide an explicit failure or create
+  additional effects; requiring a support request instead of a normal error.
+- Flags, manual approvals, preflight checks, and new dependencies that block an
+  ordinary action without a requirement or verified reason.
+- Excessive rollout plans, verification infrastructure, and separate tasks for
+  hypothetical risks unsupported by the current code and environment.
 
-Сохраняй защиту на реальных границах доверия, безопасность, доступность интерфейса,
-предотвращение потери данных и дубликатов, а также обязательные правила проекта.
-Долговечная очередь может быть самым коротким способом пережить перезапуск;
-неопределённый результат внешнего POST — достаточная причина запретить слепой повтор.
-Оспаривай конкретный лишний механизм, а не осторожность вообще.
+Preserve safeguards at real trust boundaries, security, accessibility, protection
+against data loss and duplicates, and mandatory project rules. A durable queue may
+be the shortest way to survive a restart; an uncertain result from an external
+POST is sufficient reason to forbid blind retries. Challenge a specific redundant
+mechanism rather than caution in general.
 
-Обнаруженное обязательное правило можно назвать причиной сложности и предметом
-отдельного решения, но не предлагай его молча нарушить. Предпочтение «попроще»
-не отменяет явно согласованную гарантию.
+A mandatory rule may be identified as a source of complexity and a separate
+decision to revisit, but do not propose silently violating it. A preference for
+simplicity does not override an explicitly agreed guarantee.
 
-## Проверь замечания и отдай отчёт
+## Verify findings and deliver the report
 
-Каждое замечание должно выдержать проверку:
+Each finding must meet these checks:
 
-1. Есть достижимый сценарий и точная ссылка на актуальный код, включая вызывающую
-   сторону. Проверен источник требования или явно обозначен пробел в нём.
-2. Названа лишняя операция, зависимость, ручной шаг или обязанность сопровождения;
-   показано, чем она обходится. Оценки экономии помечены как оценки.
-3. Предложен конкретный меньший вариант, проверенный по API и существующему коду.
-   Указано, какие нужные гарантии он сохраняет и что изменится для пользователя.
+1. There is a reachable scenario and a precise reference to current code, including
+   the caller. The requirement source has been checked or its gap is explicit.
+2. The redundant operation, dependency, manual step, or maintenance obligation is
+   named and its cost shown. Estimated savings are labeled as estimates.
+3. A specific smaller alternative has been checked against the API and existing
+   code. State which necessary guarantees it preserves and what changes for users.
 
-Если условие не выполнено, продолжи исследование или оставь короткий открытый
-вопрос; неподтверждённый случай не повышай до обязательной переделки. Для проверки
-спорного поведения достаточно малого изолированного воспроизведения; полный набор
-тестов и новая инфраструктура ради отчёта обычно не нужны.
+If a condition is unmet, continue investigating or leave a brief open question;
+do not promote an unconfirmed case to a mandatory rewrite. A small isolated
+reproduction is enough to check disputed behavior; a full test suite and new
+infrastructure are usually unnecessary for a report.
 
-Начни с вывода об избыточности и границ проверки. Затем дай сквозной нумерованный
-список подтверждённых упрощений по пользе: лишние внешние операции и несогласованное
-поведение раньше косметического сокращения. Для каждого кратко изложи сценарий,
-доказательство, меньший вариант и последствия сохранения текущего решения.
-Различай дефект, требующий исправления, и необязательное упрощение.
-Одну причину и одно исправление оформляй одним замечанием: лишний запрос и
-несогласованная интеграция могут быть двумя доказательствами одной проблемы.
-При нескольких MR явно указывай, где находится проблема и что лишь связано с ней.
+Lead with the conclusion about complexity and the review's scope. Then provide
+one numbered list of confirmed simplifications, ordered by benefit: redundant
+external operations and unapproved behavior before cosmetic reductions. For each,
+briefly give the scenario, evidence, smaller alternative, and consequences of
+keeping the current solution. Distinguish defects that require a fix from optional
+simplifications.
+Use one finding for one cause and fix: an unnecessary call and an unapproved
+integration may be two pieces of evidence for the same problem. Across multiple
+MRs, explicitly identify where the problem is and which changes are merely related.
 
-Отдельно назови подозрительные механизмы, которые проверил и считаешь необходимыми.
-Обычные ошибки корректности, случайно найденные при анализе, вынеси отдельно:
-они не должны подменить запрошенный разбор оверинжиниринга. Вопросы о неизвестном
-согласовании или развёртывании также отдели от доказанных замечаний.
+Separately name suspicious mechanisms you checked and found necessary. Report
+ordinary correctness bugs discovered incidentally in a separate section; they must
+not replace the requested overengineering review. Keep questions about unknown
+approval or deployment status separate from proven findings as well.
 
-Заверши ближайшим минимальным действием и существенными ограничениями проверки.
-Не превращай список возможностей в обязательный план рефакторинга или набор
-новых задач. Когда полезного упрощения нет, скажи это прямо.
+End with the smallest next action and material limits of the review. Do not turn
+possible improvements into a mandatory refactoring plan or a set of new tasks.
+When there is no useful simplification, say so directly.

@@ -25,8 +25,8 @@ calls across multiple MRs, and compares behavior with the user's agreed decision
 It produces a report without changing code or creating tasks. Necessary security,
 authorization, and data integrity checks remain part of the solution.
 
-Skill instructions are currently written in Russian. You can request answers in
-your preferred language; the README and installation instructions are in English.
+Skill instructions are written in English. You can request answers in your
+preferred language.
 
 ## Install
 

@@ -1,12 +1,12 @@
 {
   "name": "rubinho-m",
-  "description": "Скиллы для планирования и ревью без лишней сложности.",
+  "description": "Skills for planning and review without unnecessary complexity.",
   "owner": { "name": "Mikhail Rubin" },
   "plugins": [
     {
       "name": "under-engineering-plugin",
       "source": "./",
-      "description": "Планирование и ревью без лишней сложности."
+      "description": "Planning and review without unnecessary complexity."
     }
   ]
 }

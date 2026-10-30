@@ -1,13 +1,32 @@
 # Under Engineering Plugin
 
-Two skills that prevent unnecessary complexity while planning and find it in
+Two skills and bundled hook that prevent unnecessary complexity while planning and find it in
 completed code. They focus on redundant service and database calls, work added
 without agreement, and safeguards for hypothetical problems.
 
-The skills use the [Agent Skills format](https://agentskills.io/specification).
-Codex and Claude Code can install the full plugin, including a session hook.
-OpenCode and other compatible agents can install the skills with the
-[`skills` CLI](https://github.com/vercel-labs/skills).
+## What the plugin does
+
+`lean-grilling` builds on [grilling](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md)
+by [Matt Pocock](https://github.com/mattpocock), adding checks for unnecessary complexity during planning.
+
+`lean-grilling` works on its own and alongside an existing `grilling` skill. It
+filters questions before each round, checks the simplest sufficient solution,
+shows the material cost of decisions, and requests one independent review before
+final plan approval. If subagents are unavailable, it discloses that limitation
+and checks the plan itself without calling that review independent.
+
+The Codex/Claude session hook instructs the agent to load the companion whenever
+`grilling` is used. Other agents can receive the same instruction through the
+project rule above. The model applies the checks; neither a hook nor a rule
+proves that a plan contains no overengineering.
+
+`overengineering-review` examines the full diff against the target branch, traces
+calls across multiple MRs, and compares behavior with the user's agreed decisions.
+It produces a report without changing code or creating tasks. Necessary security,
+authorization, and data integrity checks remain part of the solution.
+
+Skill instructions are currently written in Russian. You can request answers in
+your preferred language; the README and installation instructions are in English.
 
 ## Install
 
@@ -86,31 +105,6 @@ Start a new session or run `/reload-plugins`. Both skills and the shared
 
 The Codex/Claude plugin requires no additional Python, Node.js, MCP servers,
 API keys, or services. Its hook runs only the shell's built-in `echo` command.
-
-## What the skills do
-
-`lean-grilling` builds on [grilling](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md)
-by [Matt Pocock](https://github.com/mattpocock), licensed under MIT, adding checks
-for unnecessary complexity during planning.
-
-`lean-grilling` works on its own and alongside an existing `grilling` skill. It
-filters questions before each round, checks the simplest sufficient solution,
-shows the material cost of decisions, and requests one independent review before
-final plan approval. If subagents are unavailable, it discloses that limitation
-and checks the plan itself without calling that review independent.
-
-The Codex/Claude session hook instructs the agent to load the companion whenever
-`grilling` is used. Other agents can receive the same instruction through the
-project rule above. The model applies the checks; neither a hook nor a rule
-proves that a plan contains no overengineering.
-
-`overengineering-review` examines the full diff against the target branch, traces
-calls across multiple MRs, and compares behavior with the user's agreed decisions.
-It produces a report without changing code or creating tasks. Necessary security,
-authorization, and data integrity checks remain part of the solution.
-
-Skill instructions are currently written in Russian. You can request answers in
-your preferred language; the README and installation instructions are in English.
 
 ## Update and uninstall
 

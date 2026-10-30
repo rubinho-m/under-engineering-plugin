@@ -1,10 +1,12 @@
 # Lean Agent Skills
 
-Два скилла для Codex: предотвращают лишнюю сложность при обсуждении плана
+Два скилла для Codex и Claude Code: предотвращают лишнюю сложность при обсуждении плана
 и находят её в готовом коде. Особенно проверяют обращения к сервисам и БД,
 самовольное расширение задачи и защиту от гипотетических рисков.
 
 ## Установка
+
+### Codex
 
 Нужны актуальный Codex CLI с командами `codex plugin` и Git.
 Выполните одну строку в терминале:
@@ -18,21 +20,41 @@ codex plugin marketplace add rubinho-m/lean-agent-skills && codex plugin add lea
 команда установки не меняет настройки доверия. После установки плагин также
 доступен в настольном приложении при использовании той же локальной конфигурации.
 
+### Claude Code
+
+Нужны актуальный Claude Code с поддержкой плагинов и Git.
+Выполните одну строку в терминале:
+
+```sh
+claude plugin install lean-agent-skills --marketplace https://github.com/rubinho-m/lean-agent-skills.git
+```
+
+Начните новый сеанс Claude Code или выполните `/reload-plugins` в текущем.
+Оба скилла и общий `SessionStart`-хук загружаются из того же пакета.
+Проверить установку можно командой `claude plugin list`.
+
 Дополнительные Python, Node.js, MCP-серверы, API-ключи и сервисы не требуются.
 Сам хук выполняет только встроенную команду `echo`.
 
 ## Использование
 
-Для обсуждения идеи или плана:
+В Codex для обсуждения идеи или плана:
 
 ```text
 $lean-agent-skills:lean-grilling Хочу спроектировать ...
 ```
 
-Для проверки одного или нескольких MR/PR:
+В Codex для проверки одного или нескольких MR/PR:
 
 ```text
 $lean-agent-skills:overengineering-review <ссылки на MR> Согласованный план: <источник>
+```
+
+В Claude Code используйте `/` вместо `$`:
+
+```text
+/lean-agent-skills:lean-grilling Хочу спроектировать ...
+/lean-agent-skills:overengineering-review <ссылки на MR> Согласованный план: <источник>
 ```
 
 `lean-grilling` работает без отдельно установленного `grilling`. Он фильтрует
@@ -52,6 +74,8 @@ $lean-agent-skills:overengineering-review <ссылки на MR> Согласо�
 
 ## Обновление и удаление
 
+Codex:
+
 ```sh
 codex plugin marketplace upgrade rubinho-m && codex plugin add lean-agent-skills@rubinho-m
 ```
@@ -61,6 +85,16 @@ codex plugin marketplace upgrade rubinho-m && codex plugin add lean-agent-skills
 
 ```sh
 codex plugin remove lean-agent-skills@rubinho-m
+```
+
+Claude Code:
+
+```sh
+claude plugin marketplace update rubinho-m && claude plugin update lean-agent-skills@rubinho-m
+```
+
+```sh
+claude plugin uninstall lean-agent-skills@rubinho-m
 ```
 
 Удаление плагина не удаляет другие плагины каталога `rubinho-m`.
@@ -84,12 +118,17 @@ codex plugin remove lean-agent-skills@rubinho-m
 python3 -m unittest discover -s tests -v
 ```
 
-Перед выпуском обновления измените `version` в `plugin.json` и выполните проверки.
+Перед выпуском обновления синхронно измените `version` в `plugin.json`
+и `.claude-plugin/plugin.json`, затем выполните проверки. Манифесты используют
+общие `skills/` и `hooks/hooks.json`; повторно объявлять хук в манифесте не нужно.
+Для проверки формата Claude Code выполните `claude plugin validate . --strict`.
 
 Описание формата плагинов и установки:
 [пакеты Codex](https://developers.openai.com/plugins/build/plugins),
 [команды CLI](https://learn.chatgpt.com/docs/cli/reference),
-[хуки и доверие](https://learn.chatgpt.com/docs/hooks).
+[хуки и доверие Codex](https://learn.chatgpt.com/docs/hooks),
+[плагины Claude Code](https://code.claude.com/docs/en/plugins-reference),
+[команды плагинов Claude Code](https://code.claude.com/docs/en/plugins/cli-reference).
 
 Этот репозиторий — Git-каталог для установки плагина; публикация в официальный
 каталог плагинов OpenAI не выполняется.

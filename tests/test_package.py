@@ -18,8 +18,26 @@ class PluginPackageTest(unittest.TestCase):
         source.relative_to(ROOT)
         manifest = json.loads((source / "plugin.json").read_text())
         self.assertEqual(entry["name"], manifest["name"])
-        self.assertEqual(manifest["version"], "0.1.0")
+        self.assertRegex(manifest["version"], r"^\d+\.\d+\.\d+$")
         self.assertEqual(manifest["license"], "MIT")
+
+    def test_claude_and_codex_install_the_same_plugin(self):
+        portable = json.loads((ROOT / "plugin.json").read_text())
+        claude = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
+        for key in ("name", "version", "description", "author", "repository", "license"):
+            self.assertEqual(claude[key], portable[key], key)
+        claude_catalog = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
+        codex_catalog = json.loads((ROOT / ".agents/plugins/marketplace.json").read_text())
+        self.assertEqual(claude_catalog["name"], codex_catalog["name"])
+        claude_entry, = claude_catalog["plugins"]
+        codex_entry, = codex_catalog["plugins"]
+        self.assertEqual(claude_entry["name"], codex_entry["name"])
+        self.assertEqual(
+            (ROOT / claude_entry["source"]).resolve(),
+            (ROOT / codex_entry["source"]["path"]).resolve(),
+        )
+        self.assertNotIn("hooks", claude)
+        self.assertNotIn("hooks", portable.get("extensions", {}).get("com.openai", {}))
 
     def test_skills_are_self_contained_after_relocation(self):
         with tempfile.TemporaryDirectory(prefix="agent skills ") as directory:

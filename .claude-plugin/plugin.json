@@ -1,0 +1,8 @@
+{
+  "name": "lean-agent-skills",
+  "version": "0.1.1",
+  "description": "Предотвращение оверинжиниринга при обсуждении плана и ревью изменений.",
+  "author": { "name": "Mikhail Rubin", "url": "https://github.com/rubinho-m" },
+  "repository": "https://github.com/rubinho-m/lean-agent-skills",
+  "license": "MIT"
+}

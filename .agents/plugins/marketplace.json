@@ -3,7 +3,7 @@
   "interface": { "displayName": "rubinho-m — Agent Skills" },
   "plugins": [
     {
-      "name": "underengineering-agent-skills",
+      "name": "under-engineering-plugin",
       "source": { "source": "local", "path": "./" },
       "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Developer Tools"

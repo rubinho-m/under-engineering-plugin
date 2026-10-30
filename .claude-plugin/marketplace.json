@@ -4,7 +4,7 @@
   "owner": { "name": "Mikhail Rubin" },
   "plugins": [
     {
-      "name": "underengineering-agent-skills",
+      "name": "under-engineering-plugin",
       "source": "./",
       "description": "Планирование и ревью без лишней сложности."
     }

@@ -1,4 +1,4 @@
-# Underengineering Agent Skills
+# Under Engineering Plugin
 
 Two skills that prevent unnecessary complexity while planning and find it in
 completed code. They focus on redundant service and database calls, work added
@@ -54,7 +54,7 @@ and [rules](https://docs.opencode.ai/docs/rules/).
 Requires a recent Codex CLI with `codex plugin` commands and Git:
 
 ```sh
-codex plugin marketplace add rubinho-m/underengineering && codex plugin add underengineering-agent-skills@rubinho-m
+codex plugin marketplace add rubinho-m/underengineering && codex plugin add under-engineering-plugin@rubinho-m
 ```
 
 Start a new session. Review and trust the plugin's `SessionStart` hook through
@@ -63,8 +63,8 @@ change hook trust settings. The plugin is also available in the desktop app when
 it shares the same local configuration.
 
 ```text
-$underengineering-agent-skills:lean-grilling Help me design ...
-$underengineering-agent-skills:overengineering-review <MR/PR URLs> Agreed plan: <source>.
+$under-engineering-plugin:lean-grilling Help me design ...
+$under-engineering-plugin:overengineering-review <MR/PR URLs> Agreed plan: <source>.
 ```
 
 ### Claude Code
@@ -72,7 +72,7 @@ $underengineering-agent-skills:overengineering-review <MR/PR URLs> Agreed plan: 
 Requires a recent Claude Code with plugin support and Git:
 
 ```sh
-claude plugin install underengineering-agent-skills --marketplace https://github.com/rubinho-m/underengineering.git
+claude plugin install under-engineering-plugin --marketplace https://github.com/rubinho-m/underengineering.git
 ```
 
 Start a new session or run `/reload-plugins`. Both skills and the shared
@@ -80,8 +80,8 @@ Start a new session or run `/reload-plugins`. Both skills and the shared
 `claude plugin list`.
 
 ```text
-/underengineering-agent-skills:lean-grilling Help me design ...
-/underengineering-agent-skills:overengineering-review <MR/PR URLs> Agreed plan: <source>.
+/under-engineering-plugin:lean-grilling Help me design ...
+/under-engineering-plugin:overengineering-review <MR/PR URLs> Agreed plan: <source>.
 ```
 
 The Codex/Claude plugin requires no additional Python, Node.js, MCP servers,
@@ -110,15 +110,18 @@ your preferred language; the README and installation instructions are in English
 
 ## Update and uninstall
 
-If you installed the plugin before version 0.1.3, remove its previous ID before
-installing the renamed plugin with the commands above:
+If you installed version 0.1.3, remove its previous ID before installing the
+renamed plugin with the commands above:
 
 ```sh
 # Codex
-codex plugin remove lean-agent-skills@rubinho-m
+codex plugin remove underengineering-agent-skills@rubinho-m
 # Claude Code
-claude plugin uninstall lean-agent-skills@rubinho-m
+claude plugin uninstall underengineering-agent-skills@rubinho-m
 ```
+
+For versions before 0.1.3, use `lean-agent-skills@rubinho-m` as the old ID in
+those removal commands.
 
 The standalone skill names (`lean-grilling` and `overengineering-review`) have
 not changed; installations through the `skills` CLI need no migration.
@@ -137,8 +140,8 @@ project installation. Removing skills does not remove a rule you added to
 Codex:
 
 ```sh
-codex plugin marketplace upgrade rubinho-m && codex plugin add underengineering-agent-skills@rubinho-m
-codex plugin remove underengineering-agent-skills@rubinho-m
+codex plugin marketplace upgrade rubinho-m && codex plugin add under-engineering-plugin@rubinho-m
+codex plugin remove under-engineering-plugin@rubinho-m
 ```
 
 Start a new session after updating. If Codex requests another review of a changed
@@ -147,8 +150,8 @@ hook, approve it through `/hooks`.
 Claude Code:
 
 ```sh
-claude plugin marketplace update rubinho-m && claude plugin update underengineering-agent-skills@rubinho-m
-claude plugin uninstall underengineering-agent-skills@rubinho-m
+claude plugin marketplace update rubinho-m && claude plugin update under-engineering-plugin@rubinho-m
+claude plugin uninstall under-engineering-plugin@rubinho-m
 ```
 
 Uninstalling the plugin leaves other plugins in the `rubinho-m` marketplace

@@ -69,7 +69,7 @@ class PluginPackageTest(unittest.TestCase):
                 env={"PATH": directory, "PLUGIN_ROOT": str(ROOT)},
                 capture_output=True, text=True, check=True, timeout=hook["timeout"],
             )
-        self.assertIn("underengineering-agent-skills:lean-grilling", result.stdout)
+        self.assertIn("under-engineering-plugin:lean-grilling", result.stdout)
         self.assertNotIn("PRIVATE_TEST_VALUE", result.stdout)
         self.assertNotIn("/missing/transcript", result.stdout)
         self.assertNotIn(str(ROOT), result.stdout)

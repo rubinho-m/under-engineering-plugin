@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "lean-agent-skills",
+  "version": "0.1.0",
+  "description": "Предотвращение оверинжиниринга при обсуждении плана и ревью изменений.",
+  "author": { "name": "Mikhail Rubin", "url": "https://github.com/rubinho-m" },
+  "repository": "https://github.com/rubinho-m/lean-agent-skills",
+  "license": "MIT",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Lean Agent Skills",
+        "shortDescription": "Разработка без лишнего",
+        "developerName": "Mikhail Rubin",
+        "category": "Developer Tools",
+        "capabilities": []
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"When grilling is used, directly or through another workflow, also load and apply the installed skill lean-agent-skills:lean-grilling before preparing question rounds and confirming the final plan.\"",
+            "timeout": 5,
+            "statusMessage": "Подключение lean-grilling"
+          }
+        ]
+      }
+    ]
+  }
+}

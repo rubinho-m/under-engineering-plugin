@@ -6,10 +6,7 @@ description: >-
   итогового плана. Применять при использовании grilling, включая вызов другим
   скиллом. Для ревью уже написанного кода использовать overengineering-review.
 metadata:
-  credits:
-    skill: grilling
-    author: Matt Pocock
-    url: "https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md"
+  credits: "Based on grilling by Matt Pocock (MIT): https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md"
 ---
 
 # Гриллинг без лишней сложности

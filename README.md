@@ -1,134 +1,181 @@
 # Under (anti-over) engineering Agent Skills
 
-Два скилла для Codex и Claude Code: предотвращают лишнюю сложность при обсуждении плана
-и находят её в готовом коде. Особенно проверяют обращения к сервисам и БД,
-самовольное расширение задачи и защиту от гипотетических рисков.
+Two skills that prevent unnecessary complexity while planning and find it in
+completed code. They focus on redundant service and database calls, work added
+without agreement, and safeguards for hypothetical problems.
 
-## Установка
+The skills use the [Agent Skills format](https://agentskills.io/specification).
+Codex and Claude Code can install the full plugin, including a session hook.
+OpenCode and other compatible agents can install the skills with the
+[`skills` CLI](https://github.com/vercel-labs/skills).
+
+## Install
+
+### OpenCode and other agents
+
+Requires Node.js, npm, and Git. Install both skills globally for OpenCode:
+
+```sh
+npx skills add rubinho-m/lean-agent-skills --agent opencode --global --yes
+```
+
+For another agent, omit `--agent opencode` to choose from the installer's supported
+agents. Omit `--global` to install into the current project. To inspect the package
+before installation:
+
+```sh
+npx skills add rubinho-m/lean-agent-skills --list
+```
+
+Start a new session and ask the agent to load the skill by name:
+
+```text
+Use lean-grilling to help me design ...
+Use overengineering-review on <MR/PR URLs>. Agreed plan: <source>.
+```
+
+This installation includes skills only. OpenCode does not run the Codex/Claude
+`hooks/hooks.json` file. To pair an existing `grilling` skill automatically,
+add this rule to your project's `AGENTS.md` (or the agent's equivalent persistent
+instructions file):
+
+```text
+Whenever grilling is used, directly or through another workflow, load and apply
+lean-grilling before preparing question rounds and confirming the final plan.
+```
+
+OpenCode reads `AGENTS.md` as project instructions. Other clients need support for
+Agent Skills and persistent instructions; this package cannot add those features
+to an arbitrary CLI. See [OpenCode skills](https://docs.opencode.ai/docs/skills/)
+and [rules](https://docs.opencode.ai/docs/rules/).
 
 ### Codex
 
-Нужны актуальный Codex CLI с командами `codex plugin` и Git.
-Выполните одну строку в терминале:
+Requires a recent Codex CLI with `codex plugin` commands and Git:
 
 ```sh
 codex plugin marketplace add rubinho-m/lean-agent-skills && codex plugin add lean-agent-skills@rubinho-m
 ```
 
-Начните новый сеанс Codex. Через `/hooks` проверьте и подтвердите доверие
-к `SessionStart` плагина. Codex не запускает новый хук до подтверждения;
-команда установки не меняет настройки доверия. После установки плагин также
-доступен в настольном приложении при использовании той же локальной конфигурации.
+Start a new session. Review and trust the plugin's `SessionStart` hook through
+`/hooks`; Codex does not run a new hook before approval. Installation does not
+change hook trust settings. The plugin is also available in the desktop app when
+it shares the same local configuration.
+
+```text
+$lean-agent-skills:lean-grilling Help me design ...
+$lean-agent-skills:overengineering-review <MR/PR URLs> Agreed plan: <source>.
+```
 
 ### Claude Code
 
-Нужны актуальный Claude Code с поддержкой плагинов и Git.
-Выполните одну строку в терминале:
+Requires a recent Claude Code with plugin support and Git:
 
 ```sh
 claude plugin install lean-agent-skills --marketplace https://github.com/rubinho-m/lean-agent-skills.git
 ```
 
-Начните новый сеанс Claude Code или выполните `/reload-plugins` в текущем.
-Оба скилла и общий `SessionStart`-хук загружаются из того же пакета.
-Проверить установку можно командой `claude plugin list`.
-
-Дополнительные Python, Node.js, MCP-серверы, API-ключи и сервисы не требуются.
-Сам хук выполняет только встроенную команду `echo`.
-
-## Использование
-
-В Codex для обсуждения идеи или плана:
+Start a new session or run `/reload-plugins`. Both skills and the shared
+`SessionStart` hook load from the same package. Check installation with
+`claude plugin list`.
 
 ```text
-$lean-agent-skills:lean-grilling Хочу спроектировать ...
+/lean-agent-skills:lean-grilling Help me design ...
+/lean-agent-skills:overengineering-review <MR/PR URLs> Agreed plan: <source>.
 ```
 
-В Codex для проверки одного или нескольких MR/PR:
+The Codex/Claude plugin requires no additional Python, Node.js, MCP servers,
+API keys, or services. Its hook runs only the shell's built-in `echo` command.
 
-```text
-$lean-agent-skills:overengineering-review <ссылки на MR> Согласованный план: <источник>
+## Compatibility checks
+
+OpenCode 1.19.5 discovered both skills installed by `skills` CLI 1.7.4 in an
+isolated project. Claude Code 2.1.312 passed strict plugin validation. These
+checks cover installation and discovery, not model behavior in a conversation.
+
+## What the skills do
+
+`lean-grilling` works on its own and alongside an existing `grilling` skill. It
+filters questions before each round, checks the simplest sufficient solution,
+shows the material cost of decisions, and requests one independent review before
+final plan approval. If subagents are unavailable, it discloses that limitation
+and checks the plan itself without calling that review independent.
+
+The Codex/Claude session hook instructs the agent to load the companion whenever
+`grilling` is used. Other agents can receive the same instruction through the
+project rule above. The model applies the checks; neither a hook nor a rule
+proves that a plan contains no overengineering.
+
+`overengineering-review` examines the full diff against the target branch, traces
+calls across multiple MRs, and compares behavior with the user's agreed decisions.
+It produces a report without changing code or creating tasks. Necessary security,
+authorization, and data integrity checks remain part of the solution.
+
+Skill instructions are currently written in Russian. You can request answers in
+your preferred language; the README and installation instructions are in English.
+
+## Update and uninstall
+
+For skills installed through the `skills` CLI:
+
+```sh
+npx skills update --global
+npx skills remove lean-grilling overengineering-review --agent opencode --global --yes
 ```
 
-В Claude Code используйте `/` вместо `$`:
-
-```text
-/lean-agent-skills:lean-grilling Хочу спроектировать ...
-/lean-agent-skills:overengineering-review <ссылки на MR> Согласованный план: <источник>
-```
-
-`lean-grilling` работает без отдельно установленного `grilling`. Он фильтрует
-вопросы до раунда, проверяет простой достаточный вариант, показывает существенную
-цену решений и перед итоговым подтверждением проводит один независимый разбор
-плана. Если субагенты недоступны, скилл сообщает об этом и выполняет собственную
-проверку, не выдавая её за независимую.
-
-Если у вас уже есть внешний `grilling`, хук добавляет агенту инструкцию применять
-компаньон вместе с ним. Распознавание смысла вопросов выполняет модель;
-хук не является автоматическим доказательством отсутствия оверинжиниринга.
-
-`overengineering-review` проверяет весь diff относительно целевой ветки,
-прослеживает запросы через несколько MR и сопоставляет поведение с решениями
-пользователя. Скилл выдаёт отчёт; сам не исправляет код и не создаёт задачи.
-Нужные проверки безопасности, прав и сохранности данных остаются частью решения.
-
-## Обновление и удаление
+The update command updates all globally installed skills. Omit `--global` for a
+project installation. Removing skills does not remove a rule you added to
+`AGENTS.md`; remove that rule if you no longer use the companion.
 
 Codex:
 
 ```sh
 codex plugin marketplace upgrade rubinho-m && codex plugin add lean-agent-skills@rubinho-m
-```
-
-После обновления начните новый сеанс. Если Codex запросит повторную проверку
-изменившегося хука, подтвердите её в `/hooks`.
-
-```sh
 codex plugin remove lean-agent-skills@rubinho-m
 ```
+
+Start a new session after updating. If Codex requests another review of a changed
+hook, approve it through `/hooks`.
 
 Claude Code:
 
 ```sh
 claude plugin marketplace update rubinho-m && claude plugin update lean-agent-skills@rubinho-m
-```
-
-```sh
 claude plugin uninstall lean-agent-skills@rubinho-m
 ```
 
-Удаление плагина не удаляет другие плагины каталога `rubinho-m`.
-Личные копии скиллов и хуков, установленные вручную, пакет не перезаписывает.
-Если такие копии уже есть, проверьте дублирование перед использованием плагина.
+Uninstalling the plugin leaves other plugins in the `rubinho-m` marketplace
+intact. The package does not overwrite manually installed personal skills or
+hooks. If you already have those copies, check for duplicates before use.
 
-## Авторство
+## Credits
 
-Основа раундового обсуждения —
+The planning discussion is based on
 [`grilling`](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md)
-от [Matt Pocock](https://github.com/mattpocock), лицензия MIT.
-Автор указан также в `metadata.credits` скилла `lean-grilling`.
-Фильтрация лишней сложности, учёт цены решений и ревью изменений — дополнения
-этого пакета. Лицензия пакета — [MIT](LICENSE).
+by [Matt Pocock](https://github.com/mattpocock), licensed under MIT. Attribution
+also appears in the `lean-grilling` skill's `metadata.credits` field.
+Complexity filtering, decision cost tracking, and change review are additions
+in this package. Package license: [MIT](LICENSE).
 
-## Проверка пакета
+## Development
 
-Для разработки и запуска тестов нужен Python 3:
+Python 3 is required to run the package checks:
 
 ```sh
 python3 -m unittest discover -s tests -v
 ```
 
-Перед выпуском обновления синхронно измените `version` в `plugin.json`
-и `.claude-plugin/plugin.json`, затем выполните проверки. Манифесты используют
-общие `skills/` и `hooks/hooks.json`; повторно объявлять хук в манифесте не нужно.
-Для проверки формата Claude Code выполните `claude plugin validate . --strict`.
+Before a release, update `version` in both `plugin.json` and
+`.claude-plugin/plugin.json`, then run the checks. Both manifests share `skills/`
+and `hooks/hooks.json`; do not declare the hook again in either manifest.
+Validate the Claude Code package with `claude plugin validate . --strict`.
 
-Описание формата плагинов и установки:
-[пакеты Codex](https://developers.openai.com/plugins/build/plugins),
-[команды CLI](https://learn.chatgpt.com/docs/cli/reference),
-[хуки и доверие Codex](https://learn.chatgpt.com/docs/hooks),
-[плагины Claude Code](https://code.claude.com/docs/en/plugins-reference),
-[команды плагинов Claude Code](https://code.claude.com/docs/en/plugins/cli-reference).
+Installation and format references:
+[Codex plugins](https://developers.openai.com/plugins/build/plugins),
+[Codex CLI](https://learn.chatgpt.com/docs/cli/reference),
+[Codex hook trust](https://learn.chatgpt.com/docs/hooks),
+[Claude Code plugins](https://code.claude.com/docs/en/plugins-reference),
+[Claude Code plugin commands](https://code.claude.com/docs/en/plugins/cli-reference).
 
-Этот репозиторий — Git-каталог для установки плагина; публикация в официальный
-каталог плагинов OpenAI не выполняется.
+This repository is a Git marketplace for plugin installation. It is not a
+submission to OpenAI's official plugin directory.

@@ -16,7 +16,7 @@ OpenCode and other compatible agents can install the skills with the
 Requires Node.js, npm, and Git. Install both skills globally for OpenCode:
 
 ```sh
-npx skills add rubinho-m/underengineering-plugin --agent opencode --global --yes
+npx skills add rubinho-m/under-engineering-plugin --agent opencode --global --yes
 ```
 
 For another agent, omit `--agent opencode` to choose from the installer's supported
@@ -24,7 +24,7 @@ agents. Omit `--global` to install into the current project. To inspect the pack
 before installation:
 
 ```sh
-npx skills add rubinho-m/underengineering-plugin --list
+npx skills add rubinho-m/under-engineering-plugin --list
 ```
 
 Start a new session and ask the agent to load the skill by name:
@@ -54,7 +54,7 @@ and [rules](https://docs.opencode.ai/docs/rules/).
 Requires a recent Codex CLI with `codex plugin` commands and Git:
 
 ```sh
-codex plugin marketplace add rubinho-m/underengineering-plugin && codex plugin add under-engineering-plugin@rubinho-m
+codex plugin marketplace add rubinho-m/under-engineering-plugin && codex plugin add under-engineering-plugin@rubinho-m
 ```
 
 Start a new session. Review and trust the plugin's `SessionStart` hook through
@@ -72,7 +72,7 @@ $under-engineering-plugin:overengineering-review <MR/PR URLs> Agreed plan: <sour
 Requires a recent Claude Code with plugin support and Git:
 
 ```sh
-claude plugin install under-engineering-plugin --marketplace https://github.com/rubinho-m/underengineering-plugin.git
+claude plugin install under-engineering-plugin --marketplace https://github.com/rubinho-m/under-engineering-plugin.git
 ```
 
 Start a new session or run `/reload-plugins`. Both skills and the shared

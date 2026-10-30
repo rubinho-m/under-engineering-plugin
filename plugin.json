@@ -4,7 +4,7 @@
   "version": "0.1.4",
   "description": "Предотвращение оверинжиниринга при обсуждении плана и ревью изменений.",
   "author": { "name": "Mikhail Rubin", "url": "https://github.com/rubinho-m" },
-  "repository": "https://github.com/rubinho-m/underengineering-plugin",
+  "repository": "https://github.com/rubinho-m/under-engineering-plugin",
   "license": "MIT",
   "extensions": {
     "com.openai": {
